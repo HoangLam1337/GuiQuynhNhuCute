@@ -75,18 +75,20 @@
     }
     .heart-fall {
       position: fixed;
+      top: -30px;
       color: #ff4d6d;
-      animation: fall linear infinite;
-      font-size: 20px;
+      animation: fall linear forwards;
+      font-size: 24px;
       z-index: 0;
     }
     @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
       100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
+  <!-- Trang tỏ tình ban đầu -->
   <!-- Trang tỏ tình ban đầu -->
   <div id="confessPage">
     <h1 id="message">Chúc mừng sinh nhật Quỳnh Như 💖</h1>
@@ -283,7 +285,7 @@
         heart.classList.add('heart-fall');
         heart.innerHTML = '❤️';
         heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.animationDuration = (2 + Math.random() * 3) + 's';
+        heart.style.animationDuration = (3 + Math.random() * 2) + 's';
         document.body.appendChild(heart);
 
         setTimeout(() => {
