@@ -12,13 +12,14 @@
       background: linear-gradient(135deg, #ffdee9, #b5fffc);
       font-family: 'Courier New', monospace;
     }
-    #confessPage, #heartPage {
+    #confessPage, #sequencePage, #heartPage {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
       width: 100%;
+      text-align: center;
     }
     h1 {
       font-size: 2em;
@@ -51,27 +52,26 @@
     button:hover {
       transform: scale(1.1);
     }
+    .display-text {
+      font-size: 2em;
+      color: #ff4d6d;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    .type-text {
+      font-size: 1.5em;
+      color: #ff4d6d;
+      max-width: 80%;
+      white-space: pre-wrap;
+      overflow: hidden;
+      border-right: 3px solid #ff4d6d;
+      animation: blink 0.75s infinite;
+      text-align: center;
+    }
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-    }
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      max-width: 350px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      margin-top: 20px;
-      border: 4px solid;
-      border-image: linear-gradient(45deg, #ff6ec4, #7873f5) 1;
-      animation: fadeIn 2s forwards;
-      z-index: 1;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
     .heart-fall {
       position: fixed;
@@ -88,38 +88,114 @@
   </style>
 </head>
 <body>
-  <!-- Trang tỏ tình ban đầu -->
-  <!-- Trang tỏ tình ban đầu -->
+  <!-- Intro Page -->
   <div id="confessPage">
     <h1 id="message">Chúc mừng sinh nhật Quỳnh Như 💖</h1>
-    <button onclick="showHeart()">Bấm vào đây</button>
+    <button onclick="startSequence()">Bấm vào đây</button>
   </div>
 
-  <!-- Trang trái tim -->
+  <!-- Sequence Page -->
+  <div id="sequencePage" style="display: none;">
+    <div id="displayArea" class="display-text"></div>
+  </div>
+
+  <!-- Heart Page -->
   <div id="heartPage" style="display: none;">
     <canvas id="pinkboard"></canvas>
-    <div class="card" id="cardMessage">
-      <h2>💌Chúc mừng sinh nhật💌</h2>
-      <p id="yourMessage">
-        Chức cậu sinh nhật vui vẻ, hạnh phúc và luôn xinh đẹp và học thật giỏi nhé! Hy vọng cậu sẽ có một ngày thật đặc biệt bên những người thân yêu. Gửi cậu 💖
-      </p>
-    </div>
-    <audio id="bgMusic" loop>
-      <source src="https://www.bensound.com/bensound-music/bensound-cute.mp3" type="audio/mp3">
-      Trình duyệt của bạn không hỗ trợ nhạc nền.
-    </audio>
+    <div class="type-text" id="typeText"></div>
   </div>
 
-  <script>  
-    function showHeart() {
+  <script>
+    function startSequence() {
       document.getElementById('confessPage').style.display = 'none';
-      document.getElementById('heartPage').style.display = 'flex';
-      startHeart();
-      document.getElementById('bgMusic').play();
+      document.getElementById('sequencePage').style.display = 'flex';
       startFallingHearts();
+      countdown();
     }
 
-    // ---------------- HEART ANIMATION ----------------
+    function countdown() {
+      const display = document.getElementById("displayArea");
+      let count = 3;
+      display.textContent = count;
+      display.style.opacity = 1;
+
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          display.textContent = count;
+        } else {
+          clearInterval(interval);
+          display.style.opacity = 0;
+          setTimeout(showMessages, 1000);
+        }
+      }, 1000);
+    }
+
+    function showMessages() {
+      const messages = [
+        "🎉 Happy Birthday 🎉",
+        "Quỳnh Như",
+        "12/07/2006",
+        "Happy 19+"
+      ];
+      const display = document.getElementById("displayArea");
+      let i = 0;
+
+      function nextMessage() {
+        if (i < messages.length) {
+          display.textContent = "";
+          display.style.opacity = 1;
+          typeText(messages[i], () => {
+            i++;
+            setTimeout(() => {
+              display.style.opacity = 0;
+              setTimeout(nextMessage, 500);
+            }, 1500);
+          });
+        } else {
+          setTimeout(() => {
+            document.getElementById('sequencePage').style.display = 'none';
+            document.getElementById('heartPage').style.display = 'flex';
+            startHeart();
+            startTypeText();
+          }, 500);
+        }
+      }
+      nextMessage();
+    }
+
+    function typeText(text, callback) {
+      const display = document.getElementById("displayArea");
+      let j = 0;
+      function typing() {
+        if (j < text.length) {
+          display.textContent += text.charAt(j);
+          j++;
+          setTimeout(typing, 50);
+        } else {
+          if (callback) callback();
+        }
+      }
+      typing();
+    }
+
+    function startTypeText() {
+      const text = "Chúc cậu sinh nhật thật vui vẻ 🎉\nMong cậu luôn hạnh phúc, xinh đẹp và thành công nhé! 💖\nHy vọng cậu sẽ có một ngày thật đặc biệt bên những người thân yêu.";
+      const typeTextEl = document.getElementById("typeText");
+      let j = 0;
+
+      function typing() {
+        if (j < text.length) {
+          typeTextEl.textContent += text.charAt(j);
+          j++;
+          setTimeout(typing, 50);
+        } else {
+          typeTextEl.style.borderRight = "none";
+        }
+      }
+      typing();
+    }
+
     function startHeart() {
       var canvas = document.getElementById('pinkboard');
       var context = canvas.getContext('2d');
@@ -293,8 +369,6 @@
         }, 5000);
       }, 300);
     }
-
-    
   </script>
 </body>
 </html>
